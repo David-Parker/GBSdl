@@ -1,5 +1,6 @@
 #include "SDLGraphicsHandler.h"
 #include <stdexcept>
+#include <cstring>
 
 SDLGraphicsHandler::SDLGraphicsHandler(int width, int height)
     : width(width), height(height)
@@ -22,12 +23,12 @@ void SDLGraphicsHandler::Init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
-        throw std::exception("Error: Failed to initialize SDL.");
+        throw std::runtime_error("Error: Failed to initialize SDL.");
     }
 
     if (SDL_CreateWindowAndRenderer(this->width, this->height, SDL_WINDOW_SHOWN, &window, &renderer) != 0)
     {
-        throw std::exception("Error: Failed to new SDL window.");
+        throw std::runtime_error("Error: Failed to new SDL window.");
     }
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
