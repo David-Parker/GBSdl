@@ -247,8 +247,7 @@ ModelManifest.xml
 
 # Custom
 *.debug
-rom/saves/*.save
-rom/*.gb
+rom/
 
 # CMAKE
 *.sln
