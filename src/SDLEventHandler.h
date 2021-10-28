@@ -9,7 +9,7 @@ private:
     int speedMultiplier;
 public:
     SDLEventHandler()
-        : shouldQuit(false), speedMultiplier(SPEED_MULTIPLIER)
+        : shouldQuit(false), speedMultiplier(1)
     {
     }
 
