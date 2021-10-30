@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
         }
 
         boy->Stop();
-        //boy->SaveGame();
+        boy->SaveGame();
     }
     catch (std::exception& ex)
     {
