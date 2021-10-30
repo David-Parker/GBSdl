@@ -29,8 +29,24 @@ int main(int argc, char* argv[])
 
     try
     {
+        u64 framesElapsed = 0;
         boy->LoadRom(romPath);
         boy->Start();
+
+        while (!boy->ShouldStop())
+        {
+            boy->Step();
+
+            // Another frame has elapsed.
+            if (boy->FramesElapsed() > framesElapsed)
+            {
+                framesElapsed = boy->FramesElapsed();
+                boy->SimulateFrameDelay();
+            }
+        }
+
+        boy->Stop();
+        //boy->SaveGame();
     }
     catch (std::exception& ex)
     {
