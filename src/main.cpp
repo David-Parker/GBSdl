@@ -17,13 +17,13 @@ int main(int argc, char* argv[])
     }
     else
     {
-        std::cout << "Enter the path to your ROM file, e.g. rom/Pokemon.gb" << std::endl;
+        std::cout << "Enter the name of your ROM file, e.g. Pokemon.gb" << std::endl;
         std::cin >> romPath;
     }
 
     // Inject SDL based handlers for desktop builds.
     GameBoy* boy = new GameBoy(
-        "rom/saves",
+        "./rom",
         new SDLGraphicsHandler(SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT), 
         new SDLEventHandler());
 
