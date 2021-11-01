@@ -7,6 +7,8 @@
 
 #undef main
 
+#define SCALE_4X 4.0
+
 int main(int argc, char* argv[])
 {
     std::string romPath;
@@ -24,27 +26,14 @@ int main(int argc, char* argv[])
     // Inject SDL based handlers for desktop builds.
     GameBoy* boy = new GameBoy(
         "./rom",
-        new SDLGraphicsHandler(SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT), 
+        new SDLGraphicsHandler(SCREEN_WIDTH, SCREEN_HEIGHT, SCALE_4X),
         new SDLEventHandler());
 
     try
     {
-        u64 framesElapsed = 0;
         boy->LoadRom(romPath);
         boy->Start();
-
-        while (!boy->ShouldStop())
-        {
-            boy->Step();
-
-            // Another frame has elapsed.
-            if (boy->FramesElapsed() > framesElapsed)
-            {
-                framesElapsed = boy->FramesElapsed();
-                boy->SimulateFrameDelay();
-            }
-        }
-
+        boy->Run();
         boy->Stop();
         boy->SaveGame();
     }

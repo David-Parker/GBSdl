@@ -7,6 +7,7 @@ class SDLEventHandler :
 private:
     bool shouldQuit;
     int speedMultiplier;
+
 public:
     SDLEventHandler()
         : shouldQuit(false), speedMultiplier(1)

@@ -7,12 +7,14 @@ class SDLGraphicsHandler :
 {
 private:
     int width, height;
+    float scale;
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
+    SDL_Rect scaledTexture;
 
 public:
-    SDLGraphicsHandler(int width, int height);
+    SDLGraphicsHandler(int width, int height, float scale);
     ~SDLGraphicsHandler();
 
     void Init();
