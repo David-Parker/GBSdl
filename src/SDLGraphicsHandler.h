@@ -19,7 +19,7 @@ public:
 
     void Init();
     void Clear();
-    void Draw(u32* pixelBuffer, int width, int height, int layer);
+    void Draw(const u32* pixelBuffer, int width, int height);
     void Flush();
     void Quit();
 };

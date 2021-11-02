@@ -35,9 +35,7 @@ void SDLGraphicsHandler::Init()
         throw std::runtime_error("Error: Failed to new SDL window.");
     }
 
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     this->texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, this->width, this->height);
-    SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_BLEND);
 }
 
 void SDLGraphicsHandler::Clear()
@@ -47,7 +45,7 @@ void SDLGraphicsHandler::Clear()
     SDL_RenderPresent(renderer);
 }
 
-void SDLGraphicsHandler::Draw(u32* pixelBuffer, int width, int height, int layer)
+void SDLGraphicsHandler::Draw(const u32* pixelBuffer, int width, int height)
 {
     void* pixels;
     int pitch;
