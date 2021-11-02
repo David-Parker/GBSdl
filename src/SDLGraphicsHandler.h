@@ -20,6 +20,5 @@ public:
     void Init();
     void Clear();
     void Draw(const u32* pixelBuffer, int width, int height);
-    void Flush();
     void Quit();
 };

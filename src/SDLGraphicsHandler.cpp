@@ -56,10 +56,6 @@ void SDLGraphicsHandler::Draw(const u32* pixelBuffer, int width, int height)
     memcpy(pixels, pixelBuffer, bytes);
     SDL_UnlockTexture(this->texture);
     SDL_RenderCopy(renderer, this->texture, NULL, &scaledTexture);
-}
-
-void SDLGraphicsHandler::Flush()
-{
     SDL_RenderPresent(renderer);
 }
 
