@@ -14,13 +14,20 @@ add_executable(GBSdl
     src/main.cpp
     src/SDLEventHandler.cpp
     src/SDLGraphicsHandler.cpp
+    src/SDLSerialHandler.cpp
     src/SDLEventHandler.h
     src/SDLGraphicsHandler.h
+    src/SDLSerialHandler.h
 )
 
 target_include_directories(GBSdl PRIVATE src)
 target_include_directories(GBSdl PRIVATE dep/GBLib/include)
+target_include_directories(GBSdl PRIVATE dep/GBLib/interface)
 target_include_directories(GBSdl PRIVATE dep/SDL2/include)
 
 target_link_libraries(GBSdl GBLib)
 target_link_libraries(GBSdl SDL2)
+
+if(WIN32)
+  target_link_libraries(GBSdl wsock32 ws2_32)
+endif()
