@@ -2,8 +2,8 @@
 #include <Ws2tcpip.h>
 #include <iostream>
 
-SDLSerialHandler::SDLSerialHandler(int listeningPort, int clientPort)
-	: clientPort(clientPort)
+SDLSerialHandler::SDLSerialHandler(int listeningPort, int clientPort, const char* clientIpAddress)
+	: clientPort(clientPort), clientIpAddress(clientIpAddress)
 {
 	WORD sockVersion;
 	WSADATA wsaData;
@@ -58,8 +58,9 @@ bool SDLSerialHandler::IsSerialConnected()
 
 void SDLSerialHandler::SendByte(Byte byte)
 {
-	char buffer[1];
+	char buffer[2];
 	buffer[0] = byte;
+	buffer[1] = 0;
 
 	char num[32];
 	//std::cout << "Byte Sent: " << itoa(byte, num, 10) << std::endl;
@@ -85,6 +86,11 @@ Byte SDLSerialHandler::RecieveByte()
     return this->recievedByte;
 }
 
+void SDLSerialHandler::Synchronize()
+{
+
+}
+
 void SDLSerialHandler::handleRecieve()
 {
 	struct sockaddr_in clientAddr;
@@ -102,9 +108,11 @@ void SDLSerialHandler::handleRecieve()
 
 		this->recieveConnected = true;
 
-		char buffer[1];
+		char buffer[2];
 		while (recv(client, buffer, 1, 0))
 		{
+			// Simulate 100ms of latency
+			//std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			this->recievedByte = (Byte)buffer[0];
 			this->byteRecieved = true;
 		}
@@ -115,7 +123,7 @@ void SDLSerialHandler::handleSend()
 {
 	/* Store server information */
 	in_addr iaHost;
-	iaHost.s_addr = inet_addr("127.0.0.1");
+	iaHost.s_addr = inet_addr(this->clientIpAddress);
 	LPHOSTENT hostEntry = gethostbyaddr((const char*)&iaHost, sizeof(struct in_addr), AF_INET);
 
 	/* Fill a SOCKADD_IN struct with address information */

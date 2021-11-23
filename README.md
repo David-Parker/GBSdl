@@ -5,8 +5,10 @@
 Clone the repository and initialize submodule dependencies.
 `git clone --recurse-submodules https://github.com/David-Parker/GBSdl.git`
 
-In the root directory run cmake.
-`cmake .`
+In the build directory run cmake.
+`mkdir build`
+`cd build`
+`cmake ..`
 
 CMake will generate platform specific build tools, e.g. a `Makefile` on Linux.
 

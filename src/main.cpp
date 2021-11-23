@@ -1,10 +1,12 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include "GameBoy.h"
 #include "SDLGraphicsHandler.h"
 #include "SDLEventHandler.h"
 #include "SDLSerialHandler.h"
 #include "SDL.h"
+#include <json/json.h>
 
 #undef main
 
@@ -12,8 +14,16 @@
 
 int main(int argc, char* argv[])
 {
+    Json::Value root;
+    Json::CharReaderBuilder builder;
     std::string romPath;
-    int listeningPort, clientPort;
+    std::ifstream jsonFile;
+    jsonFile.open("connections.json", std::ios::in);
+
+    if (!jsonFile.is_open())
+    {
+        throw std::runtime_error("connections.json file not found!.");
+    }
 
     if (argc > 1)
     {
@@ -22,24 +32,22 @@ int main(int argc, char* argv[])
     else
     {
         std::cout << "Enter the name of your ROM file, e.g. Pokemon.gb" << std::endl;
-        //std::cin >> romPath;
-        //romPath = "Tetris.gb";
+        std::cin >> romPath;
     }
 
-    romPath = "Pokemon.gb";
-
-    std::cout << "Enter the port to use for this GameBoy for serial connections." << std::endl;
-    std::cin >> listeningPort;
-
-    std::cout << "Enter the port of the other GameBoy for serial connections." << std::endl;
-    std::cin >> clientPort;
+    JSONCPP_STRING errs;
+    if (!parseFromStream(builder, jsonFile, &root, &errs)) 
+    {
+        std::cout << errs << std::endl;
+        return EXIT_FAILURE;
+    }
 
     // Inject SDL based handlers for desktop builds.
     GameBoy* boy = new GameBoy(
         "./rom",
         new SDLGraphicsHandler(SCREEN_WIDTH, SCREEN_HEIGHT, SCALE_4X),
         new SDLEventHandler(),
-        new SDLSerialHandler(listeningPort, clientPort));
+        new SDLSerialHandler(root["listeningPort"].asInt(), root["clientPort"].asInt(), root["clientIpAddress"].asCString()));
 
     try
     {
@@ -54,6 +62,9 @@ int main(int argc, char* argv[])
         boy->Stop();
         std::cout << "Error detected. " << ex.what() << std::endl;
     }
+
+    // Wait until user closes the cmd window.
+    std::cin >> romPath;
 
     return 0;
 }

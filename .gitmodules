@@ -7,3 +7,12 @@
 [submodule "dep/SDL-net"]
 	path = dep/SDL-net
 	url = https://github.com/libsdl-org/SDL_net
+[submodule "dep/boost_json"]
+	path = dep/boost_json
+	url = https://github.com/boostorg/json.git
+[submodule "dep/boost"]
+	path = dep/boost
+	url = https://github.com/boostorg/boost.git
+[submodule "dep/jsoncpp"]
+	path = dep/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git
