@@ -1,15 +1,15 @@
 #pragma once
 #include "ISerialHandler.h"
 #include "SDL.h"
-#include <winsock2.h>
+#include "SDL_net.h"
 #include <thread>
 
 class SDLSerialHandler :
     public ISerialHandler
 {
 private:
-    SOCKET listeningSocket;
-    SOCKET clientSocket;
+    TCPsocket listeningSocket;
+    TCPsocket clientSocket;
 
     const char* clientIpAddress;
     int clientPort;
@@ -32,5 +32,4 @@ public:
     void SendByte(Byte byte);
     bool ByteRecieved();
     Byte RecieveByte();
-    void Synchronize();
 };

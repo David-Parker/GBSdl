@@ -1,39 +1,23 @@
 #include "SDLSerialHandler.h"
-#include <Ws2tcpip.h>
 #include <iostream>
 
 SDLSerialHandler::SDLSerialHandler(int listeningPort, int clientPort, const char* clientIpAddress)
-	: clientPort(clientPort), clientIpAddress(clientIpAddress)
+	: clientPort(clientPort), clientIpAddress(clientIpAddress), listeningSocket(nullptr), clientSocket(nullptr)
 {
-	WORD sockVersion;
-	WSADATA wsaData;
-	int nret;
+	if (SDLNet_Init() == -1)
+	{
+		throw std::runtime_error("Failed to initialize SDL_net.");
+	}
 
-	/* Winsock version 2.2 */
-	sockVersion = MAKEWORD(2, 2);
+	IPaddress addr;
+	SDLNet_ResolveHost(&addr, NULL, listeningPort);
 
-	/* Initialize Winsock */
-	WSAStartup(sockVersion, &wsaData);
+	this->listeningSocket = SDLNet_TCP_Open(&addr);
 
-	/* Create a socket using TCP protocol */
-	listeningSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-	/* Disable Nagle's Algorithm*/
-	int flags = 0; 
-	setsockopt(listeningSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flags, sizeof(flags));
-
-	/* Address Information */
-	SOCKADDR_IN serverInfo;
-
-	serverInfo.sin_family = AF_INET;
-	serverInfo.sin_addr.s_addr = INADDR_ANY;
-	serverInfo.sin_port = htons(listeningPort);
-
-	/* Bind the socket to the port */
-	nret = bind(listeningSocket, (LPSOCKADDR)&serverInfo, sizeof(struct sockaddr));
-
-	/* Socket will now listen for a client */
-	nret = listen(listeningSocket, 1);
+	if (this->listeningSocket == NULL)
+	{
+		throw std::runtime_error("Failed to open listening server.");
+	}
 
 	/* Server successfully established! */
 	std::cout << "Server established!" << std::endl;
@@ -44,11 +28,11 @@ SDLSerialHandler::SDLSerialHandler(int listeningPort, int clientPort, const char
 
 SDLSerialHandler::~SDLSerialHandler()
 {
-	closesocket(listeningSocket);
-	closesocket(clientSocket);
-	WSACleanup();
 	delete this->recieveThread;
-	delete this->sendThread;
+    delete this->sendThread;
+	SDLNet_TCP_Close(this->listeningSocket);
+	SDLNet_TCP_Close(this->clientSocket);
+	SDLNet_Quit();
 }
 
 bool SDLSerialHandler::IsSerialConnected()
@@ -62,9 +46,8 @@ void SDLSerialHandler::SendByte(Byte byte)
 	buffer[0] = byte;
 	buffer[1] = 0;
 
-	char num[32];
-	//std::cout << "Byte Sent: " << itoa(byte, num, 10) << std::endl;
-	send(clientSocket, buffer, 1, 0);
+	printf("Byte Sent: 0x%02X\n", byte);
+	SDLNet_TCP_Send(this->clientSocket, buffer, 2);
 }
 
 bool SDLSerialHandler::ByteRecieved()
@@ -79,83 +62,47 @@ Byte SDLSerialHandler::RecieveByte()
 		//std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 
+	printf("Byte Recieved: 0x%02X\n", recievedByte);
 	this->byteRecieved = false;
-
-	char num[32];
-	//std::cout << "Byte Recieved: " << itoa(recievedByte, num, 10) << std::endl;
     return this->recievedByte;
-}
-
-void SDLSerialHandler::Synchronize()
-{
-
 }
 
 void SDLSerialHandler::handleRecieve()
 {
-	struct sockaddr_in clientAddr;
-	int addrLen = sizeof(struct sockaddr_in);
+	TCPsocket client = nullptr;
+	char buffer[2];
 
-	SOCKET client = accept(listeningSocket, NULL, NULL);
-
-	if (client == INVALID_SOCKET)
+	while (client == nullptr)
 	{
-		printf("accept() failed with error code : %d\n", WSAGetLastError());
+		client = SDLNet_TCP_Accept(this->listeningSocket);
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
-	else
+
+	this->recieveConnected = true;
+	std::cout << "Recieve connection established." << std::endl;
+	
+	while (SDLNet_TCP_Recv(client, buffer, 2))
 	{
-		std::cout << "Recieve connection established." << std::endl;
-
-		this->recieveConnected = true;
-
-		char buffer[2];
-		while (recv(client, buffer, 1, 0))
-		{
-			// Simulate 100ms of latency
-			//std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			this->recievedByte = (Byte)buffer[0];
-			this->byteRecieved = true;
-		}
+		// Simulate 100ms of latency
+	    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		this->recievedByte = (Byte)buffer[0];
+		this->byteRecieved = true;
 	}
 }
 
 void SDLSerialHandler::handleSend()
 {
-	/* Store server information */
-	in_addr iaHost;
-	iaHost.s_addr = inet_addr(this->clientIpAddress);
-	LPHOSTENT hostEntry = gethostbyaddr((const char*)&iaHost, sizeof(struct in_addr), AF_INET);
+	IPaddress addr;
+	SDLNet_ResolveHost(&addr, clientIpAddress, clientPort);
 
-	/* Fill a SOCKADD_IN struct with address information */
-	SOCKADDR_IN serverInfo;
-
-	serverInfo.sin_family = AF_INET;
-	serverInfo.sin_addr = *((LPIN_ADDR)*hostEntry->h_addr_list);
-	serverInfo.sin_port = htons(this->clientPort);
-
-	this->clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-	/* Disable Nagle's Algorithm*/
-	int flags = 0;
-	setsockopt(clientSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flags, sizeof(flags));
-
-	int result = SOCKET_ERROR;
-
-	/* Connect to the server */
-	while (result == SOCKET_ERROR)
+	while (this->clientSocket == nullptr)
 	{
-		result = connect(clientSocket, (LPSOCKADDR)&serverInfo, sizeof(SOCKADDR_IN));
+		this->clientSocket = SDLNet_TCP_Open(&addr);
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 
-	if (clientSocket == INVALID_SOCKET)
-	{
-		printf("connect() failed with error code : %d\n", WSAGetLastError());
-	}
-	else
-	{
-		/* Successfully connected to the server! */
-		std::cout << "Send connection established." << std::endl;
+	this->sendConnected = true;
 
-		this->sendConnected = true;
-	}
+	/* Successfully connected to the server! */
+	std::cout << "Send connection established." << std::endl;
 }

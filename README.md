@@ -1,14 +1,16 @@
 # GBSdl
-`GBSdl` is a Nintendo GameBoy emulator app for Windows/Linux/MacOS. It implements an SDL graphics layer on top of [GBLib](https://github.com/David-Parker/GBLib).
+`GBSdl` is a Nintendo GameBoy emulator app for Windows/Linux/MacOS. It implements an SDL layer on top of [GBLib](https://github.com/David-Parker/GBLib).
 
 ## How to Build
 Clone the repository and initialize submodule dependencies.
 `git clone --recurse-submodules https://github.com/David-Parker/GBSdl.git`
 
 In the build directory run cmake.
-`mkdir build`
-`cd build`
-`cmake ..`
+```
+mkdir build
+cd build
+cmake ..
+```
 
 CMake will generate platform specific build tools, e.g. a `Makefile` on Linux.
 
