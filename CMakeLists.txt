@@ -2,11 +2,16 @@ cmake_minimum_required(VERSION 3.9)
 
 project(GBSdl VERSION 0.0.1 DESCRIPTION "Nintendo GameBoy Emulator as a desktop application using SDL.")
 
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
 file(COPY dep/GBLib/rom DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY connections.json DESTINATION ${CMAKE_BINARY_DIR})
+
+option(JSONCPP_WITH_TESTS "Compile and (for jsoncpp_check) run JsonCpp test executables" OFF)
+option(JSONCPP_WITH_POST_BUILD_UNITTEST "Automatically run unit-tests as a post build step" OFF)
+
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR} CACHE PATH "Archive output dir.")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE PATH "Library output dir.")
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE PATH "PDB (MSVC debug symbol)output dir.")
+set (CMAKE_PDB_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR} CACHE PATH "Executable/dll output dir.")
 
 add_subdirectory(dep/GBLib build/GBLib)
 add_subdirectory(dep/SDL2 build/SDL2)
