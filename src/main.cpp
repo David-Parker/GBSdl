@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
     // Default is to use the value specified in the game cartridge.
     GameBoy::EMUType emuType;
 
-    if (root["emulatorType"]["forceDMG"].asBool() == true)
+    if (root["emulator"]["forceDMG"].asBool() == true)
     {
         emuType = GameBoy::EMUType::DMG;
     }
-    else if (root["emulatorType"]["forceCGB"].asBool() == true)
+    else if (root["emulator"]["forceCGB"].asBool() == true)
     {
         emuType = GameBoy::EMUType::CGB;
     }
@@ -65,8 +65,8 @@ int main(int argc, char* argv[])
     GameBoy* boy = new GameBoy(
         "./rom",
         new SDLGraphicsHandler(SCREEN_WIDTH, SCREEN_HEIGHT, SCALE_4X),
-        new SDLEventHandler(),
-        new SDLSerialHandler(root["serialConnection"]["listeningPort"].asInt(), root["serialConnection"]["clientPort"].asInt(), root["serialConnection"]["clientIpAddress"].asCString()),
+        new SDLEventHandler(root["emulator"]["baseMultiplier"].asInt(), root["emulator"]["turboMultiplier"].asInt()),
+        new SDLSerialHandler(root["serialConnection"]["listeningPort"].asInt(), root["serialConnection"]["clientPort"].asInt(), root["serialConnection"]["clientIpAddress"].asCString(), root["serialConnection"]["enabled"].asBool()),
         emuType);
 
     try

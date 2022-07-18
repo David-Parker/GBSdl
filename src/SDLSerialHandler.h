@@ -13,6 +13,7 @@ private:
 
     const char* clientIpAddress;
     int clientPort;
+    bool enabled = true;
     bool recieveConnected = false;
     bool sendConnected = false;
     bool byteRecieved = false;
@@ -25,7 +26,7 @@ private:
     void handleSend();
 
 public:
-    SDLSerialHandler(int listeningPort, int clientPort, const char* clientIpAddress);
+    SDLSerialHandler(int listeningPort, int clientPort, const char* clientIpAddress, bool enabled = true);
     ~SDLSerialHandler();
 
     bool IsSerialConnected();

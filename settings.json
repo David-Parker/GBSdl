@@ -1,5 +1,16 @@
 {
-    "listeningPort": 80,
-    "clientPort": 80,
-    "clientIpAddress": "127.0.0.1"
+    "emulator":
+    {
+        "forceDMG": false,
+        "forceCGB": false,
+        "baseMultiplier": 1,
+        "turboMultiplier": 15
+    },
+    "serialConnection": 
+    {
+        "enabled": false,
+        "listeningPort": 80,
+        "clientPort": 80,
+        "clientIpAddress": "127.0.0.1"
+    }
 }
