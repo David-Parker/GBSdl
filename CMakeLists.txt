@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.9)
 project(GBSdl VERSION 0.0.1 DESCRIPTION "Nintendo GameBoy Emulator as a desktop application using SDL.")
 
 file(COPY dep/GBLib/rom DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY connections.json DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY settings.json DESTINATION ${CMAKE_BINARY_DIR})
 
 option(JSONCPP_WITH_TESTS "Compile and (for jsoncpp_check) run JsonCpp test executables" OFF)
 option(JSONCPP_WITH_POST_BUILD_UNITTEST "Automatically run unit-tests as a post build step" OFF)
