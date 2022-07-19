@@ -1,6 +1,7 @@
 {
     "emulator":
     {
+        "screenScale": 4.0,
         "forceDMG": false,
         "forceCGB": false,
         "baseMultiplier": 1,
