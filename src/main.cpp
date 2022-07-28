@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "EMUType.h"
 #include "GameBoy.h"
 #include "SDLGraphicsHandler.h"
 #include "SDLEventHandler.h"
@@ -44,19 +45,19 @@ int main(int argc, char* argv[])
 
     // The settings allow for the user to force the emulator into either DMG or CGB mode.
     // Default is to use the value specified in the game cartridge.
-    GameBoy::EMUType emuType;
+    EMUType emuType;
 
     if (root["emulator"]["forceDMG"].asBool() == true)
     {
-        emuType = GameBoy::EMUType::DMG;
+        emuType = EMUType::DMG;
     }
     else if (root["emulator"]["forceCGB"].asBool() == true)
     {
-        emuType = GameBoy::EMUType::CGB;
+        emuType = EMUType::CGB;
     }
     else 
     {
-        emuType = GameBoy::EMUType::Cartridge;
+        emuType = EMUType::Cartridge;
     }
 
     // Inject SDL based handlers for desktop builds.
