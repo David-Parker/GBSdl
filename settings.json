@@ -1,4 +1,9 @@
 {
+    "rom":
+    {
+        "path": "./rom",
+        "title": "cpu_instrs.gb"
+    },
     "emulator":
     {
         "screenScale": 4.0,

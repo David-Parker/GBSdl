@@ -15,24 +15,12 @@ int main(int argc, char* argv[])
 {
     Json::Value root;
     Json::CharReaderBuilder builder;
-    std::string romPath;
     std::ifstream jsonFile;
     jsonFile.open("settings.json", std::ios::in);
 
     if (!jsonFile.is_open())
     {
         throw std::runtime_error("settings.json file not found!.");
-    }
-
-    // Read the command line args for the path to the ROM folder.
-    if (argc > 1)
-    {
-        romPath = argv[1];
-    }
-    else
-    {
-        std::cout << "Enter the name of your ROM file, e.g. Pokemon.gb" << std::endl;
-        std::cin >> romPath;
     }
 
     // Parse the settings.json file.
@@ -62,7 +50,7 @@ int main(int argc, char* argv[])
 
     // Inject SDL based handlers for desktop builds.
     GameBoy* boy = new GameBoy(
-        "./rom",
+        root["rom"]["path"].asString(),
         new SDLGraphicsHandler(SCREEN_WIDTH, SCREEN_HEIGHT, root["emulator"]["screenScale"].asFloat()),
         new SDLEventHandler(root["emulator"]["baseMultiplier"].asInt(), root["emulator"]["turboMultiplier"].asInt()),
         new SDLSerialHandler(root["serialConnection"]["listeningPort"].asInt(), root["serialConnection"]["clientPort"].asInt(), root["serialConnection"]["clientIpAddress"].asCString(), root["serialConnection"]["enabled"].asBool()),
@@ -70,7 +58,7 @@ int main(int argc, char* argv[])
 
     try
     {
-        boy->LoadRom(romPath);
+        boy->LoadRom(root["rom"]["title"].asString());
         boy->Start();
         boy->Run();
         boy->Stop();
@@ -81,9 +69,6 @@ int main(int argc, char* argv[])
         boy->Stop();
         std::cout << "Error detected. " << ex.what() << std::endl;
     }
-
-    // Wait until user closes the cmd window.
-    std::cin >> romPath;
 
     return 0;
 }
