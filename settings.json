@@ -2,7 +2,7 @@
     "rom":
     {
         "path": "./rom",
-        "title": "cpu_instrs.gb"
+        "title": "Pokemon-Crystal.gbc"
     },
     "emulator":
     {

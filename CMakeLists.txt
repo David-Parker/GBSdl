@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.10)
 
 project(GBSdl VERSION 0.0.1 DESCRIPTION "Nintendo GameBoy Emulator as a desktop application using SDL.")
 
@@ -39,3 +39,9 @@ target_link_libraries(GBSdl GBLib)
 target_link_libraries(GBSdl SDL2)
 target_link_libraries(GBSdl jsoncpp_lib)
 target_link_libraries(GBSdl SDL_net)
+
+# Headless harness for automated playtesting (no SDL dependency).
+add_executable(GBHeadless tools/headless_main.cpp)
+target_include_directories(GBHeadless PRIVATE dep/GBLib/include)
+target_include_directories(GBHeadless PRIVATE dep/GBLib/interface)
+target_link_libraries(GBHeadless GBLib)
